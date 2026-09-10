@@ -1,0 +1,13 @@
+# dependencies
+node_modules/
+
+# secrets - NEVER commit these
+.env
+render_key.txt
+
+# logs
+npm-debug.log*
+*.log
+
+# editor
+.DS_Store

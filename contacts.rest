@@ -1,0 +1,22 @@
+### ---------- LOCAL ----------
+
+### Hello World
+GET http://localhost:3000/
+
+### Get all contacts
+GET http://localhost:3000/contacts
+
+### Get one contact (paste a real _id from the GET all response)
+GET http://localhost:3000/contacts/PASTE_ID_HERE
+
+
+### ---------- PRODUCTION (Render) ----------
+
+### Hello World
+GET https://RENDER_URL_HERE/
+
+### Get all contacts
+GET https://RENDER_URL_HERE/contacts
+
+### Get one contact
+GET https://RENDER_URL_HERE/contacts/PASTE_ID_HERE
