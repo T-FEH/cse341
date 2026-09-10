@@ -1,4 +1,6 @@
-### ---------- LOCAL ----------
+### =========================================================
+###  LOCAL  (run `npm run dev` first)
+### =========================================================
 
 ### Hello World
 GET http://localhost:3000/
@@ -6,17 +8,31 @@ GET http://localhost:3000/
 ### Get all contacts
 GET http://localhost:3000/contacts
 
-### Get one contact (paste a real _id from the GET all response)
-GET http://localhost:3000/contacts/PASTE_ID_HERE
+### Get a single contact
+GET http://localhost:3000/contacts/6aa221a8d2fb8327236d8e32
+
+### Invalid id -> 400
+GET http://localhost:3000/contacts/notanid
+
+### Id that doesn't exist -> 404
+GET http://localhost:3000/contacts/6aa221a8d2fb8327236d8e99
 
 
-### ---------- PRODUCTION (Render) ----------
+### =========================================================
+###  PRODUCTION  (Render)
+### =========================================================
 
 ### Hello World
-GET https://RENDER_URL_HERE/
+GET https://cse341-contacts-34w0.onrender.com/
 
 ### Get all contacts
-GET https://RENDER_URL_HERE/contacts
+GET https://cse341-contacts-34w0.onrender.com/contacts
 
-### Get one contact
-GET https://RENDER_URL_HERE/contacts/PASTE_ID_HERE
+### Get a single contact
+GET https://cse341-contacts-34w0.onrender.com/contacts/6aa221a8d2fb8327236d8e32
+
+### Invalid id -> 400
+GET https://cse341-contacts-34w0.onrender.com/contacts/notanid
+
+### Id that doesn't exist -> 404
+GET https://cse341-contacts-34w0.onrender.com/contacts/6aa221a8d2fb8327236d8e99

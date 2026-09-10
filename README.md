@@ -20,3 +20,7 @@ A REST API for storing and retrieving contacts, built with Node.js, Express and 
 Each contact has: `firstName`, `lastName`, `email`, `favoriteColor`, `birthday`.
 
 Use `contacts.rest` with the VS Code REST Client extension to test.
+
+## Live URL
+
+https://cse341-contacts-34w0.onrender.com
