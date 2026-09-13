@@ -1,38 +1,99 @@
 ### =========================================================
-###  LOCAL  (run `npm run dev` first)
+###  LOCAL   (run `npm run dev` first)
 ### =========================================================
 
 ### Hello World
 GET http://localhost:3000/
 
-### Get all contacts
+### GET all contacts
 GET http://localhost:3000/contacts
 
-### Get a single contact
-GET http://localhost:3000/contacts/6aa221a8d2fb8327236d8e32
+### GET one contact
+GET http://localhost:3000/contacts/6aa6a8c8fab1a8f90859de5b
 
-### Invalid id -> 400
-GET http://localhost:3000/contacts/notanid
+### POST - create a contact (returns the new id)
+POST http://localhost:3000/contacts HTTP/1.1
+Content-Type: application/json
 
-### Id that doesn't exist -> 404
-GET http://localhost:3000/contacts/6aa221a8d2fb8327236d8e99
+{
+  "firstName": "Grace",
+  "lastName": "Hopper",
+  "email": "grace.hopper@example.com",
+  "favoriteColor": "navy",
+  "birthday": "1906-12-09"
+}
+
+### PUT - update a contact (paste the id from the POST above)
+PUT http://localhost:3000/contacts/PASTE_NEW_ID_HERE HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "Grace",
+  "lastName": "Hopper",
+  "email": "grace.hopper@navy.mil",
+  "favoriteColor": "teal",
+  "birthday": "1906-12-09"
+}
+
+### DELETE - remove a contact
+DELETE http://localhost:3000/contacts/PASTE_NEW_ID_HERE
 
 
 ### =========================================================
-###  PRODUCTION  (Render)
+###  PRODUCTION  (Render)  <- demo THESE in the video
 ### =========================================================
 
 ### Hello World
 GET https://cse341-contacts-34w0.onrender.com/
 
-### Get all contacts
+### GET all contacts
 GET https://cse341-contacts-34w0.onrender.com/contacts
 
-### Get a single contact
-GET https://cse341-contacts-34w0.onrender.com/contacts/6aa221a8d2fb8327236d8e32
+### GET one contact
+GET https://cse341-contacts-34w0.onrender.com/contacts/6aa6a8c8fab1a8f90859de5b
 
-### Invalid id -> 400
+### POST - create a contact (returns the new id)
+POST https://cse341-contacts-34w0.onrender.com/contacts HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "Grace",
+  "lastName": "Hopper",
+  "email": "grace.hopper@example.com",
+  "favoriteColor": "navy",
+  "birthday": "1906-12-09"
+}
+
+### PUT - update a contact (paste the id from the POST above)
+PUT https://cse341-contacts-34w0.onrender.com/contacts/PASTE_NEW_ID_HERE HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "Grace",
+  "lastName": "Hopper",
+  "email": "grace.hopper@navy.mil",
+  "favoriteColor": "teal",
+  "birthday": "1906-12-09"
+}
+
+### DELETE - remove a contact
+DELETE https://cse341-contacts-34w0.onrender.com/contacts/PASTE_NEW_ID_HERE
+
+
+### =========================================================
+###  ERROR HANDLING
+### =========================================================
+
+### Invalid id format -> 400
 GET https://cse341-contacts-34w0.onrender.com/contacts/notanid
 
-### Id that doesn't exist -> 404
+### Valid id that does not exist -> 404
 GET https://cse341-contacts-34w0.onrender.com/contacts/6aa221a8d2fb8327236d8e99
+
+### POST with missing fields -> 400 listing what is missing
+POST https://cse341-contacts-34w0.onrender.com/contacts HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "OnlyAFirstName"
+}

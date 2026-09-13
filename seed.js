@@ -24,6 +24,20 @@ const contacts = [
     birthday: '2001-06-25'
   },
   {
+    firstName: 'Daniel',
+    lastName: 'Whitfield',
+    email: 'daniel.whitfield@example.com',
+    favoriteColor: 'red',
+    birthday: '1997-09-14'
+  },
+  {
+    firstName: 'Priya',
+    lastName: 'Raman',
+    email: 'priya.raman@example.com',
+    favoriteColor: 'yellow',
+    birthday: '2002-03-08'
+  },
+  {
     firstName: 'Sofia',
     lastName: 'Martinez',
     email: 'sofia.martinez@example.com',
