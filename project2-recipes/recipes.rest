@@ -1,5 +1,5 @@
 @local = http://localhost:3000
-@prod = RENDER_URL_HERE
+@prod = https://cse341-recipes-nm9i.onrender.com
 
 ### =========================================================
 ###  CHEFS

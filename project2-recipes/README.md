@@ -75,6 +75,11 @@ server.js                → setup, mounts routes, global error handling
         db/connect.js    → one shared MongoDB connection
 ```
 
+## Live URLs
+
+- API: https://cse341-recipes-nm9i.onrender.com
+- Docs: https://cse341-recipes-nm9i.onrender.com/api-docs
+
 ## Testing
 
 Use `recipes.rest` with the VS Code REST Client extension, or the interactive
