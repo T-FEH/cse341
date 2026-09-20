@@ -1,0 +1,29 @@
+{
+  "name": "cse341-project2-recipes",
+  "version": "1.0.0",
+  "description": "CSE341 Project 2 - Recipe Box API",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "swagger": "node swagger.js",
+    "seed": "node seed.js"
+  },
+  "keywords": [],
+  "author": "T-FEH",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "dotenv": "^18.0.1",
+    "express": "^5.2.1",
+    "mongodb": "^7.6.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14",
+    "swagger-autogen": "^2.23.7"
+  },
+  "engines": {
+    "node": "20.x"
+  }
+}

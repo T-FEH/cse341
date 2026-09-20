@@ -1,0 +1,152 @@
+@local = http://localhost:3000
+@prod = RENDER_URL_HERE
+
+### =========================================================
+###  CHEFS
+### =========================================================
+
+### Get all chefs
+GET {{local}}/chefs
+
+### Get one chef
+GET {{local}}/chefs/6ab02364ab12e572f6ca9fd5
+
+### Create a chef
+POST {{local}}/chefs HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "Grace",
+  "lastName": "Hopper",
+  "email": "grace.hopper@example.com",
+  "specialty": "Naval rations",
+  "yearsExperience": 40,
+  "bio": "Pioneered the idea that recipes should be readable by humans."
+}
+
+### Update a chef (paste the id returned by the POST above)
+PUT {{local}}/chefs/PASTE_NEW_CHEF_ID HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "Grace",
+  "lastName": "Hopper",
+  "email": "grace.hopper@example.com",
+  "specialty": "Compilers and cooking",
+  "yearsExperience": 41,
+  "bio": "Pioneered the idea that recipes should be readable by humans."
+}
+
+### Delete a chef
+DELETE {{local}}/chefs/PASTE_NEW_CHEF_ID
+
+
+### =========================================================
+###  RECIPES
+### =========================================================
+
+### Get all recipes
+GET {{local}}/recipes
+
+### Get one recipe
+GET {{local}}/recipes/6ab02364ab12e572f6ca9fda
+
+### Create a recipe
+POST {{local}}/recipes HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Blueberry Pancakes",
+  "description": "Fluffy buttermilk pancakes folded with fresh blueberries.",
+  "cuisine": "American",
+  "difficulty": "easy",
+  "prepMinutes": 10,
+  "cookMinutes": 15,
+  "servings": 4,
+  "ingredients": ["200g flour", "2 eggs", "300ml buttermilk", "150g blueberries"],
+  "instructions": ["Whisk the dry ingredients.", "Fold in the wet ingredients.", "Cook on a medium griddle until bubbles form.", "Flip once."],
+  "chefId": "6ab02364ab12e572f6ca9fd5"
+}
+
+### Update a recipe (paste the id returned by the POST above)
+PUT {{local}}/recipes/PASTE_NEW_RECIPE_ID HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "Blueberry Pancakes",
+  "description": "Fluffy buttermilk pancakes, now with a lemon zest finish.",
+  "cuisine": "American",
+  "difficulty": "medium",
+  "prepMinutes": 12,
+  "cookMinutes": 15,
+  "servings": 6,
+  "ingredients": ["200g flour", "2 eggs", "300ml buttermilk", "150g blueberries", "1 lemon"],
+  "instructions": ["Whisk the dry ingredients.", "Fold in the wet ingredients.", "Cook on a medium griddle.", "Finish with lemon zest."],
+  "chefId": "6ab02364ab12e572f6ca9fd5"
+}
+
+### Delete a recipe
+DELETE {{local}}/recipes/PASTE_NEW_RECIPE_ID
+
+
+### =========================================================
+###  VALIDATION  (each returns 400 listing every bad field)
+### =========================================================
+
+### Recipe with every field wrong
+POST {{local}}/recipes HTTP/1.1
+Content-Type: application/json
+
+{
+  "title": "x",
+  "description": "short",
+  "difficulty": "extreme",
+  "prepMinutes": -5,
+  "servings": 0,
+  "ingredients": [],
+  "instructions": "not a list",
+  "chefId": "nope"
+}
+
+### Chef with a bad email and negative experience
+POST {{local}}/chefs HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "A",
+  "lastName": "B",
+  "email": "not-an-email",
+  "specialty": "x",
+  "yearsExperience": -3,
+  "bio": "tiny"
+}
+
+### Duplicate chef email
+POST {{local}}/chefs HTTP/1.1
+Content-Type: application/json
+
+{
+  "firstName": "Marco",
+  "lastName": "Clone",
+  "email": "marco.bellini@example.com",
+  "specialty": "Italian",
+  "yearsExperience": 5,
+  "bio": "Trying to reuse an email that already belongs to another chef."
+}
+
+
+### =========================================================
+###  ERROR HANDLING
+### =========================================================
+
+### Malformed id -> 400
+GET {{local}}/recipes/notanid
+
+### Recipe that does not exist -> 404
+GET {{local}}/recipes/000000000000000000000000
+
+### Unknown route -> 404
+GET {{local}}/nosuchthing
+
+### Delete a chef who still owns recipes -> 400
+DELETE {{local}}/chefs/6ab02364ab12e572f6ca9fd5
