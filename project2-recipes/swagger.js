@@ -64,4 +64,31 @@ const doc = {
 const outputFile = './swagger.json';
 const routes = ['./routes/index.js'];
 
-swaggerAutogen(outputFile, routes, doc);
+swaggerAutogen(outputFile, routes, doc).then(() => {
+  // swagger-autogen cannot set a default value for a path parameter, so we
+  // add them here. This is what makes the Try it out boxes come pre-filled.
+  const fs = require('fs');
+  const spec = JSON.parse(fs.readFileSync(outputFile, 'utf8'));
+
+  const defaultIds = {
+    '/recipes/{id}': '000000000000000000000a01',
+    '/chefs/{id}': '000000000000000000000c06'
+  };
+
+  Object.keys(defaultIds).forEach((path) => {
+    Object.keys(spec.paths[path]).forEach((method) => {
+      spec.paths[path][method].parameters = [
+        {
+          name: 'id',
+          in: 'path',
+          required: true,
+          description: 'The 24 character id of the document',
+          schema: { type: 'string', default: defaultIds[path] }
+        }
+      ];
+    });
+  });
+
+  fs.writeFileSync(outputFile, JSON.stringify(spec, null, 2));
+  console.log('Added default ids to the path parameters');
+});

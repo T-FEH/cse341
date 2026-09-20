@@ -49,7 +49,17 @@ const createChef = async (req, res) => {
   // #swagger.summary = 'Create a new chef'
   /*  #swagger.requestBody = {
         required: true,
-        content: { "application/json": { schema: { $ref: "#/components/schemas/Chef" } } }
+        content: { "application/json": {
+          schema: { $ref: "#/components/schemas/Chef" },
+          example: {
+            firstName: "Grace",
+            lastName: "Hopper",
+            email: "grace.hopper@example.com",
+            specialty: "Naval rations",
+            yearsExperience: 40,
+            bio: "Pioneered the idea that recipes should be readable by humans."
+          }
+        } }
       }
   */
   try {
@@ -77,7 +87,17 @@ const updateChef = async (req, res) => {
   // #swagger.summary = 'Update a chef by id'
   /*  #swagger.requestBody = {
         required: true,
-        content: { "application/json": { schema: { $ref: "#/components/schemas/Chef" } } }
+        content: { "application/json": {
+          schema: { $ref: "#/components/schemas/Chef" },
+          example: {
+            firstName: "Priya",
+            lastName: "Raman",
+            email: "priya.raman@example.com",
+            specialty: "South Indian and Sri Lankan",
+            yearsExperience: 8,
+            bio: "Makes dosa batter from scratch and ferments it for two full days."
+          }
+        } }
       }
   */
   try {

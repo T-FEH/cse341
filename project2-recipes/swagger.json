@@ -79,6 +79,28 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/Recipe"
+              },
+              "example": {
+                "title": "Blueberry Pancakes",
+                "description": "Fluffy buttermilk pancakes folded with fresh blueberries.",
+                "cuisine": "American",
+                "difficulty": "easy",
+                "prepMinutes": 10,
+                "cookMinutes": 15,
+                "servings": 4,
+                "ingredients": [
+                  "200g flour",
+                  "2 eggs",
+                  "300ml buttermilk",
+                  "150g blueberries"
+                ],
+                "instructions": [
+                  "Whisk the dry ingredients.",
+                  "Fold in the wet ingredients.",
+                  "Cook on a medium griddle.",
+                  "Flip once."
+                ],
+                "chefId": "000000000000000000000c01"
               }
             }
           }
@@ -97,8 +119,10 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The 24 character id of the document",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "000000000000000000000a01"
             }
           }
         ],
@@ -128,8 +152,10 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The 24 character id of the document",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "000000000000000000000a01"
             }
           }
         ],
@@ -153,6 +179,29 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/Recipe"
+              },
+              "example": {
+                "title": "Spaghetti Carbonara",
+                "description": "A Roman pasta dish, updated to serve six people.",
+                "cuisine": "Italian",
+                "difficulty": "hard",
+                "prepMinutes": 12,
+                "cookMinutes": 18,
+                "servings": 6,
+                "ingredients": [
+                  "600g spaghetti",
+                  "220g guanciale",
+                  "6 egg yolks",
+                  "120g pecorino romano",
+                  "black pepper"
+                ],
+                "instructions": [
+                  "Boil the pasta in salted water.",
+                  "Crisp the guanciale.",
+                  "Whisk yolks with pecorino.",
+                  "Toss off the heat."
+                ],
+                "chefId": "000000000000000000000c01"
               }
             }
           }
@@ -169,8 +218,10 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The 24 character id of the document",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "000000000000000000000a01"
             }
           }
         ],
@@ -229,6 +280,14 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/Chef"
+              },
+              "example": {
+                "firstName": "Grace",
+                "lastName": "Hopper",
+                "email": "grace.hopper@example.com",
+                "specialty": "Naval rations",
+                "yearsExperience": 40,
+                "bio": "Pioneered the idea that recipes should be readable by humans."
               }
             }
           }
@@ -247,8 +306,10 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The 24 character id of the document",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "000000000000000000000c06"
             }
           }
         ],
@@ -278,8 +339,10 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The 24 character id of the document",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "000000000000000000000c06"
             }
           }
         ],
@@ -303,6 +366,14 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/Chef"
+              },
+              "example": {
+                "firstName": "Priya",
+                "lastName": "Raman",
+                "email": "priya.raman@example.com",
+                "specialty": "South Indian and Sri Lankan",
+                "yearsExperience": 8,
+                "bio": "Makes dosa batter from scratch and ferments it for two full days."
               }
             }
           }
@@ -319,8 +390,10 @@
             "name": "id",
             "in": "path",
             "required": true,
+            "description": "The 24 character id of the document",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "000000000000000000000c06"
             }
           }
         ],

@@ -54,7 +54,21 @@ const createRecipe = async (req, res) => {
   // #swagger.summary = 'Create a new recipe'
   /*  #swagger.requestBody = {
         required: true,
-        content: { "application/json": { schema: { $ref: "#/components/schemas/Recipe" } } }
+        content: { "application/json": {
+          schema: { $ref: "#/components/schemas/Recipe" },
+          example: {
+            title: "Blueberry Pancakes",
+            description: "Fluffy buttermilk pancakes folded with fresh blueberries.",
+            cuisine: "American",
+            difficulty: "easy",
+            prepMinutes: 10,
+            cookMinutes: 15,
+            servings: 4,
+            ingredients: ["200g flour", "2 eggs", "300ml buttermilk", "150g blueberries"],
+            instructions: ["Whisk the dry ingredients.", "Fold in the wet ingredients.", "Cook on a medium griddle.", "Flip once."],
+            chefId: "000000000000000000000c01"
+          }
+        } }
       }
   */
   try {
@@ -81,7 +95,21 @@ const updateRecipe = async (req, res) => {
   // #swagger.summary = 'Update a recipe by id'
   /*  #swagger.requestBody = {
         required: true,
-        content: { "application/json": { schema: { $ref: "#/components/schemas/Recipe" } } }
+        content: { "application/json": {
+          schema: { $ref: "#/components/schemas/Recipe" },
+          example: {
+            title: "Spaghetti Carbonara",
+            description: "A Roman pasta dish, updated to serve six people.",
+            cuisine: "Italian",
+            difficulty: "hard",
+            prepMinutes: 12,
+            cookMinutes: 18,
+            servings: 6,
+            ingredients: ["600g spaghetti", "220g guanciale", "6 egg yolks", "120g pecorino romano", "black pepper"],
+            instructions: ["Boil the pasta in salted water.", "Crisp the guanciale.", "Whisk yolks with pecorino.", "Toss off the heat."],
+            chefId: "000000000000000000000c01"
+          }
+        } }
       }
   */
   try {
