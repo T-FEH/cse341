@@ -1,30 +1,28 @@
 const { ObjectId } = require('mongodb');
 const { getDatabase } = require('../db/connect');
 
-const COLLECTION = 'recipes';
+// Only copy the fields we want so nothing extra gets saved
+function buildRecipe(body) {
+  return {
+    title: body.title.trim(),
+    description: body.description.trim(),
+    cuisine: body.cuisine.trim(),
+    difficulty: body.difficulty,
+    prepMinutes: body.prepMinutes,
+    cookMinutes: body.cookMinutes,
+    servings: body.servings,
+    ingredients: body.ingredients,
+    instructions: body.instructions,
+    chefId: body.chefId
+  };
+}
 
-// Copies only the fields we allow. Saving req.body straight into Mongo would
-// let a client sneak extra fields into the document.
-const buildRecipe = (body) => ({
-  title: body.title.trim(),
-  description: body.description.trim(),
-  cuisine: body.cuisine.trim(),
-  difficulty: body.difficulty,
-  prepMinutes: body.prepMinutes,
-  cookMinutes: body.cookMinutes,
-  servings: body.servings,
-  ingredients: body.ingredients.map((i) => i.trim()),
-  instructions: body.instructions.map((i) => i.trim()),
-  chefId: body.chefId
-});
-
-// GET /recipes
 const getAll = async (req, res) => {
   // #swagger.tags = ['Recipes']
   // #swagger.summary = 'Get all recipes'
   try {
-    const cursor = await getDatabase().collection(COLLECTION).find();
-    const recipes = await cursor.toArray();
+    const result = await getDatabase().collection('recipes').find();
+    const recipes = await result.toArray();
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(recipes);
   } catch (err) {
@@ -32,13 +30,12 @@ const getAll = async (req, res) => {
   }
 };
 
-// GET /recipes/:id
 const getSingle = async (req, res) => {
   // #swagger.tags = ['Recipes']
   // #swagger.summary = 'Get a single recipe by id'
   try {
     const recipe = await getDatabase()
-      .collection(COLLECTION)
+      .collection('recipes')
       .findOne({ _id: new ObjectId(req.params.id) });
 
     if (!recipe) {
@@ -52,7 +49,6 @@ const getSingle = async (req, res) => {
   }
 };
 
-// POST /recipes
 const createRecipe = async (req, res) => {
   // #swagger.tags = ['Recipes']
   // #swagger.summary = 'Create a new recipe'
@@ -64,8 +60,7 @@ const createRecipe = async (req, res) => {
   try {
     const db = getDatabase();
 
-    // chefId passed the format check in the middleware, but that only proves
-    // it LOOKS like an id. Make sure the chef actually exists.
+    // Make sure the chef actually exists before saving the recipe
     const chef = await db.collection('chefs').findOne({ _id: new ObjectId(req.body.chefId) });
     if (!chef) {
       return res.status(400).json({
@@ -74,14 +69,13 @@ const createRecipe = async (req, res) => {
       });
     }
 
-    const result = await db.collection(COLLECTION).insertOne(buildRecipe(req.body));
+    const result = await db.collection('recipes').insertOne(buildRecipe(req.body));
     res.status(201).json({ id: result.insertedId });
   } catch (err) {
     res.status(500).json({ message: 'Failed to create recipe.', error: err.message });
   }
 };
 
-// PUT /recipes/:id
 const updateRecipe = async (req, res) => {
   // #swagger.tags = ['Recipes']
   // #swagger.summary = 'Update a recipe by id'
@@ -102,11 +96,11 @@ const updateRecipe = async (req, res) => {
     }
 
     const result = await db
-      .collection(COLLECTION)
+      .collection('recipes')
       .updateOne({ _id: new ObjectId(req.params.id) }, { $set: buildRecipe(req.body) });
 
-    // matchedCount answers "does this id exist". modifiedCount would be 0 when
-    // someone re-sends identical data, which is still a successful update.
+    // matchedCount tells us if the id exists. modifiedCount would be 0
+    // when someone sends the same data again, which is still fine.
     if (result.matchedCount === 0) {
       return res.status(404).json({ message: 'Recipe not found.' });
     }
@@ -117,13 +111,12 @@ const updateRecipe = async (req, res) => {
   }
 };
 
-// DELETE /recipes/:id
 const deleteRecipe = async (req, res) => {
   // #swagger.tags = ['Recipes']
   // #swagger.summary = 'Delete a recipe by id'
   try {
     const result = await getDatabase()
-      .collection(COLLECTION)
+      .collection('recipes')
       .deleteOne({ _id: new ObjectId(req.params.id) });
 
     if (result.deletedCount === 0) {

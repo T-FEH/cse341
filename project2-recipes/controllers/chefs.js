@@ -1,24 +1,23 @@
 const { ObjectId } = require('mongodb');
 const { getDatabase } = require('../db/connect');
 
-const COLLECTION = 'chefs';
+function buildChef(body) {
+  return {
+    firstName: body.firstName.trim(),
+    lastName: body.lastName.trim(),
+    email: body.email.trim().toLowerCase(),
+    specialty: body.specialty.trim(),
+    yearsExperience: body.yearsExperience,
+    bio: body.bio.trim()
+  };
+}
 
-const buildChef = (body) => ({
-  firstName: body.firstName.trim(),
-  lastName: body.lastName.trim(),
-  email: body.email.trim().toLowerCase(),
-  specialty: body.specialty.trim(),
-  yearsExperience: body.yearsExperience,
-  bio: body.bio.trim()
-});
-
-// GET /chefs
 const getAll = async (req, res) => {
   // #swagger.tags = ['Chefs']
   // #swagger.summary = 'Get all chefs'
   try {
-    const cursor = await getDatabase().collection(COLLECTION).find();
-    const chefs = await cursor.toArray();
+    const result = await getDatabase().collection('chefs').find();
+    const chefs = await result.toArray();
     res.setHeader('Content-Type', 'application/json');
     res.status(200).json(chefs);
   } catch (err) {
@@ -26,13 +25,12 @@ const getAll = async (req, res) => {
   }
 };
 
-// GET /chefs/:id
 const getSingle = async (req, res) => {
   // #swagger.tags = ['Chefs']
   // #swagger.summary = 'Get a single chef by id'
   try {
     const chef = await getDatabase()
-      .collection(COLLECTION)
+      .collection('chefs')
       .findOne({ _id: new ObjectId(req.params.id) });
 
     if (!chef) {
@@ -46,7 +44,6 @@ const getSingle = async (req, res) => {
   }
 };
 
-// POST /chefs
 const createChef = async (req, res) => {
   // #swagger.tags = ['Chefs']
   // #swagger.summary = 'Create a new chef'
@@ -59,8 +56,8 @@ const createChef = async (req, res) => {
     const db = getDatabase();
     const chef = buildChef(req.body);
 
-    // Two chefs sharing an email would make the data confusing, so reject it.
-    const existing = await db.collection(COLLECTION).findOne({ email: chef.email });
+    // Two chefs with the same email would be confusing
+    const existing = await db.collection('chefs').findOne({ email: chef.email });
     if (existing) {
       return res.status(400).json({
         message: 'Validation failed.',
@@ -68,14 +65,13 @@ const createChef = async (req, res) => {
       });
     }
 
-    const result = await db.collection(COLLECTION).insertOne(chef);
+    const result = await db.collection('chefs').insertOne(chef);
     res.status(201).json({ id: result.insertedId });
   } catch (err) {
     res.status(500).json({ message: 'Failed to create chef.', error: err.message });
   }
 };
 
-// PUT /chefs/:id
 const updateChef = async (req, res) => {
   // #swagger.tags = ['Chefs']
   // #swagger.summary = 'Update a chef by id'
@@ -89,9 +85,9 @@ const updateChef = async (req, res) => {
     const chefId = new ObjectId(req.params.id);
     const chef = buildChef(req.body);
 
-    // Same email check, but ignore the chef we are currently editing -
-    // otherwise saving a chef without changing their email would fail.
-    const existing = await db.collection(COLLECTION).findOne({
+    // Skip the chef we are editing, otherwise saving without
+    // changing the email would fail
+    const existing = await db.collection('chefs').findOne({
       email: chef.email,
       _id: { $ne: chefId }
     });
@@ -102,7 +98,7 @@ const updateChef = async (req, res) => {
       });
     }
 
-    const result = await db.collection(COLLECTION).updateOne({ _id: chefId }, { $set: chef });
+    const result = await db.collection('chefs').updateOne({ _id: chefId }, { $set: chef });
 
     if (result.matchedCount === 0) {
       return res.status(404).json({ message: 'Chef not found.' });
@@ -114,25 +110,22 @@ const updateChef = async (req, res) => {
   }
 };
 
-// DELETE /chefs/:id
 const deleteChef = async (req, res) => {
   // #swagger.tags = ['Chefs']
   // #swagger.summary = 'Delete a chef by id'
   try {
     const db = getDatabase();
-    const chefId = new ObjectId(req.params.id);
 
-    // Deleting a chef who still owns recipes would leave those recipes
-    // pointing at nothing, so block it and say why.
-    const recipeCount = await db.collection('recipes').countDocuments({ _id: { $exists: true }, chefId: req.params.id });
+    // Do not leave recipes pointing at a chef that no longer exists
+    const recipeCount = await db.collection('recipes').countDocuments({ chefId: req.params.id });
     if (recipeCount > 0) {
       return res.status(400).json({
         message: 'Validation failed.',
-        errors: [`This chef still has ${recipeCount} recipe(s). Delete or reassign them first.`]
+        errors: ['This chef still has ' + recipeCount + ' recipe(s). Delete them first.']
       });
     }
 
-    const result = await db.collection(COLLECTION).deleteOne({ _id: chefId });
+    const result = await db.collection('chefs').deleteOne({ _id: new ObjectId(req.params.id) });
 
     if (result.deletedCount === 0) {
       return res.status(404).json({ message: 'Chef not found.' });

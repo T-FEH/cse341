@@ -1,4 +1,4 @@
-// One-off helper: `npm run seed` fills the database with starter data.
+// Run `npm run seed` to fill the database with starting data
 const { initDb, getDatabase } = require('./db/connect');
 
 const chefs = [
@@ -19,7 +19,8 @@ const chefs = [
     bio: 'Learned to bake during university and has not stopped since then.' }
 ];
 
-// chefIndex points at the chefs array above; real ids get filled in after insert.
+// chefIndex points at the chefs list above. The real id gets
+// filled in after the chefs are inserted.
 const recipes = [
   { chefIndex: 0, title: 'Spaghetti Carbonara', description: 'A Roman pasta dish built on eggs, cheese and cured pork.',
     cuisine: 'Italian', difficulty: 'medium', prepMinutes: 10, cookMinutes: 15, servings: 4,
@@ -59,22 +60,39 @@ const run = async () => {
   await initDb();
   const db = getDatabase();
 
-  // Start clean so re-running does not create duplicates.
+  // Clear both collections so running this again does not duplicate anything
   await db.collection('recipes').deleteMany({});
   await db.collection('chefs').deleteMany({});
 
   const chefResult = await db.collection('chefs').insertMany(chefs);
-  const chefIds = Object.values(chefResult.insertedIds).map((id) => id.toString());
-  console.log(`Inserted ${chefResult.insertedCount} chefs`);
+  const chefIds = Object.values(chefResult.insertedIds);
+  console.log('Inserted ' + chefResult.insertedCount + ' chefs');
 
-  // Swap chefIndex for the real id that Mongo just generated.
-  const withRealIds = recipes.map(({ chefIndex, ...rest }) => ({ ...rest, chefId: chefIds[chefIndex] }));
-  const recipeResult = await db.collection('recipes').insertMany(withRealIds);
-  console.log(`Inserted ${recipeResult.insertedCount} recipes`);
+  // Swap chefIndex for the real id Mongo just made
+  const recipesToInsert = [];
+  for (let i = 0; i < recipes.length; i++) {
+    const recipe = recipes[i];
+    recipesToInsert.push({
+      title: recipe.title,
+      description: recipe.description,
+      cuisine: recipe.cuisine,
+      difficulty: recipe.difficulty,
+      prepMinutes: recipe.prepMinutes,
+      cookMinutes: recipe.cookMinutes,
+      servings: recipe.servings,
+      ingredients: recipe.ingredients,
+      instructions: recipe.instructions,
+      chefId: chefIds[recipe.chefIndex].toString()
+    });
+  }
 
-  console.log('\nSample ids for testing:');
-  console.log('  chef  :', chefIds[0]);
-  console.log('  recipe:', Object.values(recipeResult.insertedIds)[0].toString());
+  const recipeResult = await db.collection('recipes').insertMany(recipesToInsert);
+  console.log('Inserted ' + recipeResult.insertedCount + ' recipes');
+
+  console.log('');
+  console.log('Ids you can use for testing:');
+  console.log('  chef:   ' + chefIds[0]);
+  console.log('  recipe: ' + Object.values(recipeResult.insertedIds)[0]);
   process.exit(0);
 };
 

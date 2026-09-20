@@ -1,9 +1,8 @@
 const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
-// Store the connected database here so we only open ONE connection.
-// Opening a new one per request would be slow and would eventually
-// exhaust the cluster's connection limit.
+// Keep one connection and reuse it instead of opening a new
+// one on every request
 let _db;
 
 const initDb = async () => {
@@ -13,12 +12,11 @@ const initDb = async () => {
   }
 
   const client = await MongoClient.connect(process.env.MONGODB_URI);
-  _db = client.db(process.env.MONGODB_DBNAME || 'recipebox');
-  console.log('Connected to MongoDB ->', process.env.MONGODB_DBNAME);
+  _db = client.db(process.env.MONGODB_DBNAME);
+  console.log('Connected to MongoDB');
   return _db;
 };
 
-// Any file needing the database calls this to borrow the shared connection.
 const getDatabase = () => {
   if (!_db) {
     throw Error('Db not initialized. Call initDb first.');

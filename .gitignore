@@ -11,3 +11,4 @@ npm-debug.log*
 
 # editor
 .DS_Store
+render.txt

@@ -10,8 +10,7 @@ const doc = {
       'and error handling on every route.',
     version: '1.0.0'
   },
-  // A relative URL means Swagger sends requests to whatever host is serving the
-  // docs - the Render URL in production, localhost while developing.
+  // A relative url makes Swagger call whatever host is serving the docs
   servers: [
     { url: '/', description: 'This server' }
   ],

@@ -7,10 +7,9 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// If the body is not valid JSON, express.json() throws before any route runs.
-// Catch it here so the client gets a clear 400 instead of a stack trace.
+// express.json() throws if the body is not valid JSON
 app.use((err, req, res, next) => {
-  if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
+  if (err instanceof SyntaxError && err.status === 400) {
     return res.status(400).json({
       message: 'Validation failed.',
       errors: ['Request body is not valid JSON.']
@@ -19,7 +18,6 @@ app.use((err, req, res, next) => {
   next(err);
 });
 
-// CORS: lets a browser on another domain call this API.
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Z-Key');
@@ -29,23 +27,22 @@ app.use((req, res, next) => {
 
 app.use('/', require('./routes'));
 
-// Nothing matched any route above.
+// Nothing above matched
 app.use((req, res) => {
-  res.status(404).json({ message: `Route not found: ${req.method} ${req.originalUrl}` });
+  res.status(404).json({ message: 'Route not found: ' + req.method + ' ' + req.originalUrl });
 });
 
-// Last line of defence. Every controller has its own try/catch, but if
-// something unexpected slips through, this keeps the server alive and still
-// answers with JSON instead of crashing.
+// Catches anything the controllers missed
 app.use((err, req, res, next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({ message: 'Something went wrong on the server.', error: err.message });
 });
 
+// Connect to the database first, then start listening
 initDb()
   .then(() => {
     app.listen(port, () => {
-      console.log(`Web server is listening on port ${port}`);
+      console.log('Web server is listening on port ' + port);
     });
   })
   .catch((err) => {

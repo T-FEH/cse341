@@ -1,137 +1,106 @@
 const { ObjectId } = require('mongodb');
 
-// ---------------------------------------------------------------------------
-// A tiny validation helper.
-//
-// Instead of writing the same if-statements in every controller, each
-// collection describes its fields once in a "schema" below. checkAgainstSchema
-// walks that schema and collects every problem it finds, so the response can
-// tell the client about all the bad fields at once instead of one at a time.
-// ---------------------------------------------------------------------------
+// These run before the controller, so by the time a controller runs
+// we already know the data is good.
 
-// Checks one value against one rule. Returns an error string, or null if fine.
-const checkField = (value, name, rule) => {
-  // Every field in these schemas is required.
-  if (value === undefined || value === null || value === '') {
-    return `${name} is required.`;
-  }
-
-  if (rule.type === 'string') {
-    if (typeof value !== 'string') return `${name} must be text.`;
-    const trimmed = value.trim();
-    if (trimmed.length < rule.min) return `${name} must be at least ${rule.min} characters.`;
-    if (trimmed.length > rule.max) return `${name} must be ${rule.max} characters or fewer.`;
-    return null;
-  }
-
-  if (rule.type === 'email') {
-    if (typeof value !== 'string') return `${name} must be text.`;
-    // Deliberately simple: something, an @, something, a dot, something.
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-      return `${name} must be a valid email address.`;
-    }
-    return null;
-  }
-
-  if (rule.type === 'integer') {
-    if (!Number.isInteger(value)) return `${name} must be a whole number.`;
-    if (value < rule.min) return `${name} must be ${rule.min} or more.`;
-    if (value > rule.max) return `${name} must be ${rule.max} or less.`;
-    return null;
-  }
-
-  if (rule.type === 'enum') {
-    if (!rule.values.includes(value)) {
-      return `${name} must be one of: ${rule.values.join(', ')}.`;
-    }
-    return null;
-  }
-
-  if (rule.type === 'stringArray') {
-    if (!Array.isArray(value)) return `${name} must be a list.`;
-    if (value.length < rule.min) return `${name} needs at least ${rule.min} item(s).`;
-    const allText = value.every((item) => typeof item === 'string' && item.trim() !== '');
-    if (!allText) return `${name} must be a list of non-empty text values.`;
-    return null;
-  }
-
-  if (rule.type === 'objectId') {
-    if (!ObjectId.isValid(value)) return `${name} must be a valid 24-character id.`;
-    return null;
-  }
-
-  return null;
-};
-
-// Runs every rule in a schema and returns an array of error messages.
-const checkAgainstSchema = (body, schema) => {
+function validateRecipe(req, res, next) {
+  const body = req.body || {};
   const errors = [];
-  Object.keys(schema).forEach((name) => {
-    const problem = checkField(body[name], name, schema[name]);
-    if (problem) errors.push(problem);
-  });
-  return errors;
-};
 
-// ---------------------------------------------------------------------------
-// The schemas
-// ---------------------------------------------------------------------------
+  if (!body.title || body.title.trim().length < 2 || body.title.trim().length > 100) {
+    errors.push('title is required and must be 2 to 100 characters.');
+  }
 
-const recipeSchema = {
-  title:        { type: 'string', min: 2, max: 100 },
-  description:  { type: 'string', min: 10, max: 500 },
-  cuisine:      { type: 'string', min: 2, max: 50 },
-  difficulty:   { type: 'enum', values: ['easy', 'medium', 'hard'] },
-  prepMinutes:  { type: 'integer', min: 0, max: 1440 },
-  cookMinutes:  { type: 'integer', min: 0, max: 1440 },
-  servings:     { type: 'integer', min: 1, max: 100 },
-  ingredients:  { type: 'stringArray', min: 1 },
-  instructions: { type: 'stringArray', min: 1 },
-  chefId:       { type: 'objectId' }
-};
+  if (!body.description || body.description.trim().length < 10 || body.description.trim().length > 500) {
+    errors.push('description is required and must be 10 to 500 characters.');
+  }
 
-const chefSchema = {
-  firstName:       { type: 'string', min: 2, max: 50 },
-  lastName:        { type: 'string', min: 2, max: 50 },
-  email:           { type: 'email' },
-  specialty:       { type: 'string', min: 2, max: 60 },
-  yearsExperience: { type: 'integer', min: 0, max: 80 },
-  bio:             { type: 'string', min: 10, max: 500 }
-};
+  if (!body.cuisine || body.cuisine.trim().length < 2 || body.cuisine.trim().length > 50) {
+    errors.push('cuisine is required and must be 2 to 50 characters.');
+  }
 
-// ---------------------------------------------------------------------------
-// The middleware. Express runs these before the controller, so a controller
-// never has to wonder whether req.body is trustworthy.
-// ---------------------------------------------------------------------------
+  const levels = ['easy', 'medium', 'hard'];
+  if (!levels.includes(body.difficulty)) {
+    errors.push('difficulty must be easy, medium or hard.');
+  }
 
-const validateBody = (schema) => (req, res, next) => {
-  const errors = checkAgainstSchema(req.body || {}, schema);
+  if (!Number.isInteger(body.prepMinutes) || body.prepMinutes < 0 || body.prepMinutes > 1440) {
+    errors.push('prepMinutes must be a whole number from 0 to 1440.');
+  }
+
+  if (!Number.isInteger(body.cookMinutes) || body.cookMinutes < 0 || body.cookMinutes > 1440) {
+    errors.push('cookMinutes must be a whole number from 0 to 1440.');
+  }
+
+  if (!Number.isInteger(body.servings) || body.servings < 1 || body.servings > 100) {
+    errors.push('servings must be a whole number from 1 to 100.');
+  }
+
+  if (!Array.isArray(body.ingredients) || body.ingredients.length < 1) {
+    errors.push('ingredients must be a list with at least one item.');
+  }
+
+  if (!Array.isArray(body.instructions) || body.instructions.length < 1) {
+    errors.push('instructions must be a list with at least one item.');
+  }
+
+  if (!body.chefId || !ObjectId.isValid(body.chefId)) {
+    errors.push('chefId must be a valid 24 character id.');
+  }
 
   if (errors.length > 0) {
-    return res.status(400).json({
-      message: 'Validation failed.',
-      errors
-    });
+    return res.status(400).json({ message: 'Validation failed.', errors: errors });
   }
 
   next();
-};
+}
 
-// Checks the :id in the URL before the controller tries to use it.
-const validateId = (req, res, next) => {
+function validateChef(req, res, next) {
+  const body = req.body || {};
+  const errors = [];
+
+  if (!body.firstName || body.firstName.trim().length < 2 || body.firstName.trim().length > 50) {
+    errors.push('firstName is required and must be 2 to 50 characters.');
+  }
+
+  if (!body.lastName || body.lastName.trim().length < 2 || body.lastName.trim().length > 50) {
+    errors.push('lastName is required and must be 2 to 50 characters.');
+  }
+
+  // Simple check: something, an @, something, a dot, something.
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!body.email || !emailPattern.test(body.email)) {
+    errors.push('email is required and must be a valid email address.');
+  }
+
+  if (!body.specialty || body.specialty.trim().length < 2 || body.specialty.trim().length > 60) {
+    errors.push('specialty is required and must be 2 to 60 characters.');
+  }
+
+  if (!Number.isInteger(body.yearsExperience) || body.yearsExperience < 0 || body.yearsExperience > 80) {
+    errors.push('yearsExperience must be a whole number from 0 to 80.');
+  }
+
+  if (!body.bio || body.bio.trim().length < 10 || body.bio.trim().length > 500) {
+    errors.push('bio is required and must be 10 to 500 characters.');
+  }
+
+  if (errors.length > 0) {
+    return res.status(400).json({ message: 'Validation failed.', errors: errors });
+  }
+
+  next();
+}
+
+// Checks the id in the url before the controller uses it
+function validateId(req, res, next) {
   if (!ObjectId.isValid(req.params.id)) {
     return res.status(400).json({
       message: 'Validation failed.',
-      errors: ['id must be a valid 24-character id.']
+      errors: ['id must be a valid 24 character id.']
     });
   }
   next();
-};
+}
 
-module.exports = {
-  validateRecipe: validateBody(recipeSchema),
-  validateChef: validateBody(chefSchema),
-  validateId,
-  recipeSchema,
-  chefSchema
-};
+module.exports = { validateRecipe, validateChef, validateId };
