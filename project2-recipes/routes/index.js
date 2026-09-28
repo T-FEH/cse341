@@ -6,11 +6,13 @@ router.get('/', (req, res) => {
   // #swagger.summary = 'Health check'
   res.json({
     message: 'Recipe Box API is running.',
-    documentation: '/api-docs'
+    documentation: '/api-docs',
+    loggedIn: req.isAuthenticated ? req.isAuthenticated() : false
   });
 });
 
 router.use('/', require('./swagger'));
+router.use('/', require('./auth'));
 router.use('/recipes', require('./recipes'));
 router.use('/chefs', require('./chefs'));
 

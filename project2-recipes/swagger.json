@@ -23,6 +23,10 @@
     {
       "name": "Health",
       "description": "Service health check"
+    },
+    {
+      "name": "Authentication",
+      "description": "GitHub OAuth login, logout and profile"
     }
   ],
   "paths": {
@@ -32,6 +36,79 @@
           "Health"
         ],
         "summary": "Health check",
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/login": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Log in with GitHub",
+        "description": "Redirects to GitHub. Open this in a browser tab, not from Swagger, because Swagger cannot follow the redirect.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/github/callback": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "GitHub sends the user back here after login",
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/login-failed": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Shown when a GitHub login does not complete",
+        "description": "",
+        "responses": {
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/profile": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Show the logged in user",
+        "description": "Returns 401 when nobody is logged in, which is the easiest way to show the difference.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/logout": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Log out",
         "description": "",
         "responses": {
           "200": {
@@ -69,10 +146,18 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Not logged in"
+          },
           "500": {
             "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "githubOAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -166,6 +251,9 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Not logged in"
+          },
           "404": {
             "description": "Not Found"
           },
@@ -173,6 +261,11 @@
             "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "githubOAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -232,13 +325,21 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Not logged in"
+          },
           "404": {
             "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "githubOAuth": []
+          }
+        ]
       }
     },
     "/chefs/": {
@@ -270,10 +371,18 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Not logged in"
+          },
           "500": {
             "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "githubOAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -353,6 +462,9 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Not logged in"
+          },
           "404": {
             "description": "Not Found"
           },
@@ -360,6 +472,11 @@
             "description": "Internal Server Error"
           }
         },
+        "security": [
+          {
+            "githubOAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
@@ -404,17 +521,33 @@
           "400": {
             "description": "Bad Request"
           },
+          "401": {
+            "description": "Not logged in"
+          },
           "404": {
             "description": "Not Found"
           },
           "500": {
             "description": "Internal Server Error"
           }
-        }
+        },
+        "security": [
+          {
+            "githubOAuth": []
+          }
+        ]
       }
     }
   },
   "components": {
+    "securitySchemes": {
+      "githubOAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "connect.sid",
+        "description": "Log in by opening /login in a browser tab. GitHub sends you back with a session cookie, and Swagger then includes that cookie automatically. Without it every POST, PUT and DELETE returns 401."
+      }
+    },
     "schemas": {
       "Recipe": {
         "type": "object",

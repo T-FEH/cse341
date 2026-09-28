@@ -52,6 +52,8 @@ const getSingle = async (req, res) => {
 const createRecipe = async (req, res) => {
   // #swagger.tags = ['Recipes']
   // #swagger.summary = 'Create a new recipe'
+  // #swagger.security = [{ "githubOAuth": [] }]
+  // #swagger.responses[401] = { description: 'Not logged in' }
   /*  #swagger.requestBody = {
         required: true,
         content: { "application/json": {
@@ -93,6 +95,8 @@ const createRecipe = async (req, res) => {
 const updateRecipe = async (req, res) => {
   // #swagger.tags = ['Recipes']
   // #swagger.summary = 'Update a recipe by id'
+  // #swagger.security = [{ "githubOAuth": [] }]
+  // #swagger.responses[401] = { description: 'Not logged in' }
   /*  #swagger.requestBody = {
         required: true,
         content: { "application/json": {
@@ -142,6 +146,8 @@ const updateRecipe = async (req, res) => {
 const deleteRecipe = async (req, res) => {
   // #swagger.tags = ['Recipes']
   // #swagger.summary = 'Delete a recipe by id'
+  // #swagger.security = [{ "githubOAuth": [] }]
+  // #swagger.responses[401] = { description: 'Not logged in' }
   try {
     const result = await getDatabase()
       .collection('recipes')

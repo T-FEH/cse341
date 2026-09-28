@@ -47,6 +47,8 @@ const getSingle = async (req, res) => {
 const createChef = async (req, res) => {
   // #swagger.tags = ['Chefs']
   // #swagger.summary = 'Create a new chef'
+  // #swagger.security = [{ "githubOAuth": [] }]
+  // #swagger.responses[401] = { description: 'Not logged in' }
   /*  #swagger.requestBody = {
         required: true,
         content: { "application/json": {
@@ -85,6 +87,8 @@ const createChef = async (req, res) => {
 const updateChef = async (req, res) => {
   // #swagger.tags = ['Chefs']
   // #swagger.summary = 'Update a chef by id'
+  // #swagger.security = [{ "githubOAuth": [] }]
+  // #swagger.responses[401] = { description: 'Not logged in' }
   /*  #swagger.requestBody = {
         required: true,
         content: { "application/json": {
@@ -133,6 +137,8 @@ const updateChef = async (req, res) => {
 const deleteChef = async (req, res) => {
   // #swagger.tags = ['Chefs']
   // #swagger.summary = 'Delete a chef by id'
+  // #swagger.security = [{ "githubOAuth": [] }]
+  // #swagger.responses[401] = { description: 'Not logged in' }
   try {
     const db = getDatabase();
 

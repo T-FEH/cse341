@@ -17,9 +17,21 @@ const doc = {
   tags: [
     { name: 'Recipes', description: 'Recipes - 10 fields per document' },
     { name: 'Chefs', description: 'The chefs who author recipes' },
-    { name: 'Health', description: 'Service health check' }
+    { name: 'Health', description: 'Service health check' },
+    { name: 'Authentication', description: 'GitHub OAuth login, logout and profile' }
   ],
   components: {
+    securitySchemes: {
+      githubOAuth: {
+        type: 'apiKey',
+        in: 'cookie',
+        name: 'connect.sid',
+        description:
+          'Log in by opening /login in a browser tab. GitHub sends you back with a ' +
+          'session cookie, and Swagger then includes that cookie automatically. ' +
+          'Without it every POST, PUT and DELETE returns 401.'
+      }
+    },
     schemas: {
       Recipe: {
         type: 'object',

@@ -1,4 +1,5 @@
 const express = require('express');
+const session = require('express-session');
 const { initDb } = require('./db/connect');
 require('dotenv').config();
 
@@ -17,6 +18,28 @@ app.use((err, req, res, next) => {
   }
   next(err);
 });
+
+// Render sits behind a proxy. Without this the secure cookie never gets set.
+app.set('trust proxy', 1);
+
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'local-dev-secret',
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      // Only send the cookie over https once we are deployed
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 1000 * 60 * 60 * 24 // one day
+    }
+  })
+);
+
+// Passport has to come after the session, because it stores the user there
+const passport = require('./config/passport');
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
