@@ -54,6 +54,9 @@ router.get('/logout', (req, res, next) => {
       return next(err);
     }
     req.session.destroy(() => {
+      // destroy() clears the session on the server, but the browser still
+      // holds the cookie. Clear it too so nothing stale is left behind.
+      res.clearCookie('connect.sid');
       res.status(200).json({ message: 'You are logged out.' });
     });
   });
